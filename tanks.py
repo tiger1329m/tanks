@@ -71,10 +71,10 @@ class Tank(pygame.sprite.Sprite):
                         h += 1
             if pygame.sprite.groupcollide(self.g, sprites_barrier, False, False) or pygame.sprite.groupcollide(
                     self.g, borders, False, False) or (
-                                self.g != sprites_my and pygame.sprite.groupcollide(self.g, sprites_my, False,
-                                                                                    False) or h) or (
-                            self.g != sprites_enemy and pygame.sprite.groupcollide(self.g, sprites_enemy, False,
-                                                                                   False)):
+                    self.g != sprites_my and pygame.sprite.groupcollide(self.g, sprites_my, False,
+                                                                        False) or h) or (
+                    self.g != sprites_enemy and pygame.sprite.groupcollide(self.g, sprites_enemy, False,
+                                                                           False)):
                 self.rect.x -= self.xm
                 self.rect.y -= self.ym
                 self.go = False
@@ -133,20 +133,19 @@ class Bullet(pygame.sprite.Sprite):
 
 
 class Gift(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__(all_sprites)
-        self.add(gifts)
+    def __init__(self, x, y):
+        super().__init__(gifts)
+        # self.add(gifts)
         self.image = pygame.transform.scale(pygame.image.load("data/star.png"), (32, 32))
         self.rect = self.image.get_rect()
-        x, y = 0, 0
-        for i in range(13):
+        '''for i in range(13):
             for j in range(13):
                 self.rect.x = i * 32 + 60
                 self.rect.y = j * 32 + 60
             if not pygame.sprite.groupcollide(gifts, all_sprites, True, False):
-                x, y = i * 32 + 60, j * 32 + 60
+                x, y = i * 32 + 60, j * 32 + 60'''
         self.rect.x, self.rect.y = x, y
-        print(self.rect.x, self.rect.y)
+        print('gg')
 
     def update(self):
         pass
@@ -270,6 +269,7 @@ def main():
     tank1.spawn()
     score = 0
     tanks_killed = 0
+    gf = False
     game_over = False
     stage = Stage(s, (W - 205) // 2, 550, 'stage', 205, 40)
     one = Stage(s, (W - 40) // 4, 600, 'one', 40, 45)
@@ -419,6 +419,8 @@ def main():
             if t.hp == 0:
                 t.image = pygame.transform.scale(pygame.image.load("data/{}.png".format('boom1')), (32, 32))
                 sprites_enemy.draw(screen)
+                Stage(mini_tanks, W - 30 - (tanks_killed % 2) * 27, 60 + 24 * (tanks_killed // 2), 'little_tank', 27,
+                      24)
                 tanks_killed += 1
                 score += 100
                 t.hp -= 1
@@ -442,18 +444,19 @@ def main():
                 if sh == 3:
                     t.shoot(sprites_en_bullet)
 
-        if tanks_killed == 16 and not gift:
+        '''if tanks_killed == 1 and not gf:
             x, y = 0, 0
-            while not gift:
-                gift = Gift()
-            for i in range(x, 13):
-                for j in range(y, 13):
-                    x, y = i, j
-                    gift.rect.x = i * 32 + 60
-                    gift.rect.y = j * 32 + 60
-                if pygame.sprite.groupcollide(gifts, all_sprites, False, False):
-                    gift.kill()
-            print(x, y)
+            while not gf:
+                for i in range(0, 13):
+                    for j in range(0, 13):
+                        x, y = i, j
+                        x = i * 32 + 60
+                        y = j * 32 + 60
+                        gift = Gift(x,y)
+                        if not (gf and pygame.sprite.groupcollide(gifts, sprites_barrier, True, False)):
+                            gf = True
+                            i,j=12,12
+                            print(x, y)'''
 
         pygame.sprite.groupcollide(sprites_bullet, sprites_wall, True, True)
         pygame.sprite.groupcollide(sprites_bullet, borders, True, False)
@@ -469,7 +472,6 @@ def main():
             for i in the_flag:
                 i.image = pygame.transform.scale(pygame.image.load("data/{}.png".format('dead_flag')), (32, 32))
                 pygame.display.flip()
-                # time.sleep(5)
                 game_over = "lose"
                 running = False
         if tank1.hp <= 0:
